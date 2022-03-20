@@ -73,9 +73,11 @@ class CurrencyConvertorActivity : AppCompatActivity() {
                                         hideKeyboard(this@CurrencyConvertorActivity)
                                         val getString = mBinding.actCurrencyInput.text.toString()
                                         val getNumber: Double = checkInputValue(getString)
-                                        gridAdapter.differ.submitList(
-                                            mViewModel.getCalculatedRates(getNumber)?.map { it.copy() })
-                                        gridAdapter.updateList(getNumber, it.data[pos].rate)
+                                        gridAdapter.updateList(
+                                            getNumber,
+                                            it.data[pos].rate,
+                                            it.data
+                                        )
                                     }
                                 }
                             val dataSize = it.data.size

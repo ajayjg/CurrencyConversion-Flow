@@ -55,10 +55,10 @@ class ConversionGridAdapter(
         return data.rate * targetPrice / selectRate
     }
 
-    fun updateList(targetPrice: Double, selectRate: Double) {
+    fun updateList(targetPrice: Double, selectRate: Double, list: MutableList<CurrencyLookup>) {
         this.selectRate = selectRate
         this.targetPrice = targetPrice
-        notifyDataSetChanged()
+        differ.submitList(list)
     }
 }
 
