@@ -3,36 +3,53 @@ package com.conversion.currency
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
+import android.net.ConnectivityManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.conversion.currency.module.conversion_activity.CurrencyConvertorViewModel
+import com.conversion.currency.module.conversion_activity.model.CurrencyTransfer
 import com.conversion.currency.module.conversion_activity.repository.CurrencyConverterDataSource
+import com.conversion.currency.util.isNetworkConnected
 import com.conversion.currency.util.network.APIService
+import com.conversion.currency.util.network.Result
 import com.conversion.currency.util.room.ConverencyDatabase
 import com.nhaarman.mockito_kotlin.mock
-import junit.framework.TestCase
+import junit.framework.Assert.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 
+@ExperimentalCoroutinesApi
+@RunWith(JUnit4::class)
+class ConcurrencyConverterViewModelTest {
 
-@RunWith(AndroidJUnit4::class)
-class ConcurrencyConverterViewModelTest : TestCase() {
-
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    protected val mockAppContext: Application = Mockito.mock(Application::class.java)
     private lateinit var viewModel: CurrencyConvertorViewModel
+    private val mockConnectivityManager: ConnectivityManager =
+        Mockito.mock(ConnectivityManager::class.java)
+    protected val mockResources: Resources = Mockito.mock(Resources::class.java)
+    var mockPrefs: SharedPreferences = Mockito.mock(SharedPreferences::class.java)
+    private val testDispatcher = TestCoroutineDispatcher()
+    private val testScope = TestCoroutineScope(testDispatcher)
 
-    @Mock
-    lateinit var mockContext: Context
-
-    @Mock
-    lateinit var mockPrefs: SharedPreferences
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     @Mock
     lateinit var apiService: APIService
@@ -40,31 +57,50 @@ class ConcurrencyConverterViewModelTest : TestCase() {
     @Mock
     lateinit var roomDatabase: ConverencyDatabase
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-
     @Before
-    public override fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        Mockito.`when`(mockContext.getSharedPreferences(anyString(), anyInt()))
+    fun setUp() {
+        `when`(mockAppContext.getSharedPreferences(anyString(), anyInt()))
             .thenReturn(mockPrefs)
         apiService = mock()
         roomDatabase = Room.inMemoryDatabaseBuilder(
-            context, ConverencyDatabase::class.java
+            mockAppContext, ConverencyDatabase::class.java
         ).allowMainThreadQueries().build()
         val repository =
             CurrencyConverterDataSource(roomDatabase.currencyDao(), apiService, mockPrefs)
-        viewModel = CurrencyConvertorViewModel(context, repository)
+        viewModel = CurrencyConvertorViewModel(mockAppContext, repository)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun testIsInitialisationWorking() = runBlockingTest {
+        viewModel.initiate()
+        `when`(isNetworkConnected(mockAppContext)).thenReturn(false)
+        val stateFlow = MutableStateFlow<Result<CurrencyTransfer>>(Result.Loading(null))
+        assertEquals(stateFlow, viewModel.stateFlow.value)
     }
 
     @Test
-    fun testCurrencyConverterViewmodel() {
+    fun testNotConnectedToNetworkWithoutDbData() {
 
     }
 
     @Test
-    fun testCurrencyInfoInsertion() {
+    fun testNotConnectedToNetworkWithDbData() {
+
+    }
+
+    @Test
+    fun testConnectedToNetworkWithDbData() {
+
+    }
+
+    @Test
+    fun testConnectedToNetworkWithoutDbData() {
+
+    }
+
+    @Test
+    fun testCalculatedRates() {
 
     }
 }
