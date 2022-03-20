@@ -67,9 +67,15 @@ class CurrencyConvertorViewModel @Inject constructor(
                             )
                         )
                 } else {
-                    // fetch the data from api, 30mins over
+                    // fetch the data from api, 30 mins over
                     val currencyTypes = async { dataSource.getCurrencyTypes() }
-                    val rateData = async { delay(3000);dataSource.getCurrencyRates() }
+                    val rateData = async {
+                        // I think server is not allowing simultaneous requests for free account,
+                        // even after implementing parallel execution facing api failure,
+                        // Developer can try commenting the delay below and run the app.
+                        delay(3000)
+                        dataSource.getCurrencyRates()
+                    }
                     val currentTransfer =
                         convertCurrencyTransfer(
                             currencyTypes.await().body(),
