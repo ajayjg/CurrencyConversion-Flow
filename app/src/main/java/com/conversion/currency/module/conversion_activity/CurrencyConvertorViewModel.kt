@@ -1,7 +1,6 @@
 package com.conversion.currency.module.conversion_activity
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.conversion.currency.R
@@ -31,7 +30,7 @@ class CurrencyConvertorViewModel @Inject constructor(
     private var currentMultiplier = 1.0
     private var previousMultiplier = 1.0
 
-    init {
+    fun initiate() {
         if (isNetworkConnected(context)) {
             _currencyTransferStateFlow.value = Result.Loading(null)
             makeInitRequest()
@@ -121,9 +120,12 @@ class CurrencyConvertorViewModel @Inject constructor(
         return returnData
     }
 
-    fun getCalculatedRates(multiplier: Double): MutableList<CurrencyLookup>? {
+    fun getCalculatedRates(
+        target: Double,
+        selectRate: Double? = null
+    ): MutableList<CurrencyLookup>? {
         previousMultiplier = currentMultiplier
-        currentMultiplier = multiplier
+        currentMultiplier = target
         _currencyTransferStateFlow.value.data?.let {
             for (rate in it.data) {
                 rate.rate /= previousMultiplier
