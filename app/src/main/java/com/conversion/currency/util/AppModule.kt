@@ -1,9 +1,17 @@
 package com.conversion.currency.util
 
-import com.androiddevs.mvvmnewsapp.api.APIService
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.room.Room
+import com.conversion.currency.BuildConfig
+import com.conversion.currency.util.Constants.Companion.PREFERENCE_KEY
+import com.conversion.currency.util.network.APIService
+import com.conversion.currency.util.room.CurrencyDao
+import com.conversion.currency.util.room.ConverencyDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -44,4 +52,20 @@ class AppModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): APIService = retrofit.create(APIService::class.java)
 
+    @Provides
+    @Singleton
+    fun provideRoomDatabase(@ApplicationContext context: Context): ConverencyDatabase {
+        return Room.databaseBuilder(context, ConverencyDatabase::class.java, "CurrencyTable.db")
+            .build()
+    }
+
+    @Provides
+    fun provideChannelDao(appDatabase: ConverencyDatabase): CurrencyDao {
+        return appDatabase.currencyDao()
+    }
+
+    @Provides
+    @Singleton
+    fun setupSharedPreferences(@ApplicationContext app: Context):
+            SharedPreferences = app.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
 }

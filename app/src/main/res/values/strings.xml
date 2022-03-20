@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Convrency</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="no_conversions">No Conversions</string>
+    <string name="target_price">Target price(Default 1)</string>
+    <string name="check_network">No Internet! Check network connection and Try again.</string>
 </resources>
