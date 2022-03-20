@@ -35,8 +35,20 @@ class CurrencyConvertorViewModel @Inject constructor(
             _currencyTransferStateFlow.value = Result.Loading(null)
             makeInitRequest()
         } else {
-            _currencyTransferStateFlow.value =
-                Result.Error(context.getString(R.string.check_network))
+            viewModelScope.launch {
+                val offlineRateList = dataSource.loadRateList().toMutableList()
+                if (offlineRateList.isEmpty()) {
+                    _currencyTransferStateFlow.value =
+                        Result.Error(context.getString(R.string.check_network))
+                } else {
+                    _currencyTransferStateFlow.value =
+                        Result.Success(
+                            CurrencyTransfer(
+                                dataSource.loadRateList().toMutableList()
+                            )
+                        )
+                }
+            }
         }
     }
 
@@ -121,8 +133,7 @@ class CurrencyConvertorViewModel @Inject constructor(
     }
 
     fun getCalculatedRates(
-        target: Double,
-        selectRate: Double? = null
+        target: Double
     ): MutableList<CurrencyLookup>? {
         previousMultiplier = currentMultiplier
         currentMultiplier = target

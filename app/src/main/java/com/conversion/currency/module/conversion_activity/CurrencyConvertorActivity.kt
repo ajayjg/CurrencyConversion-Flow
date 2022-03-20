@@ -52,6 +52,7 @@ class CurrencyConvertorActivity : AppCompatActivity() {
             mViewModel.stateFlow.collect {
                 when (it) {
                     is Result.Success -> {
+                        mBinding.actCurrencyInput.isEnabled = true
                         mBinding.progressBar.visibility = View.GONE
                         it.data?.let {
                             val adapter =
@@ -73,7 +74,7 @@ class CurrencyConvertorActivity : AppCompatActivity() {
                                         val getString = mBinding.actCurrencyInput.text.toString()
                                         val getNumber: Double = checkInputValue(getString)
                                         gridAdapter.differ.submitList(
-                                            mViewModel.getCalculatedRates(getNumber, it.data[pos].rate)?.map { it.copy() })
+                                            mViewModel.getCalculatedRates(getNumber)?.map { it.copy() })
                                         gridAdapter.updateList(getNumber, it.data[pos].rate)
                                     }
                                 }

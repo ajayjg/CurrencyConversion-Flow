@@ -34,6 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
+                android:enabled="false"
                 android:inputType="numberDecimal"
                 android:paddingStart="16dp"
                 android:paddingEnd="4dp" />
