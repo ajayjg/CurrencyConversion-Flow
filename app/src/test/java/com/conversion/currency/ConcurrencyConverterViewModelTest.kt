@@ -40,9 +40,6 @@ class ConcurrencyConverterViewModelTest {
     var instantTaskExecutorRule = InstantTaskExecutorRule()
     protected val mockAppContext: Application = Mockito.mock(Application::class.java)
     private lateinit var viewModel: CurrencyConvertorViewModel
-    private val mockConnectivityManager: ConnectivityManager =
-        Mockito.mock(ConnectivityManager::class.java)
-    protected val mockResources: Resources = Mockito.mock(Resources::class.java)
     var mockPrefs: SharedPreferences = Mockito.mock(SharedPreferences::class.java)
     private val testDispatcher = TestCoroutineDispatcher()
     private val testScope = TestCoroutineScope(testDispatcher)
